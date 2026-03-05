@@ -2,6 +2,26 @@
 
 Python-Skript zur Erstellung formatierter Excel-Zeittabellen aus Arbeitszeitdaten mit automatischer deutscher Feiertagsintegration.
 
+## 🚀 Schnellstart (Empfohlen: Web-App nutzen)
+
+### Web-App starten
+
+1. Abhängigkeiten installieren:
+```bash
+pip install -r requirements.txt
+```
+
+2. Web-App starten:
+```bash
+streamlit run web_app.py
+```
+
+3. Browser öffnen und die Anweisungen in der App folgen, um deine Zeitdaten zu exportieren.
+
+### Fallback: Command Line (nur wenn Web-App nicht funktioniert)
+
+Wenn die Web-App nicht funktioniert, kannst du das Skript über die Kommandozeile ausführen. Siehe Abschnitt "🔧 Command Line Fallback" am Ende dieser README.
+
 ## 📋 Vorbereitung
 
 Bevor das Skript ausgeführt wird, müssen die folgenden Schritte durchgeführt werden:
@@ -38,7 +58,7 @@ Speichern Sie die erstellte `data.json` Datei im `/input` Ordner.
 
 ### Benötigte Pakete
 ```bash
-pip install openpyxl requests
+pip install openpyxl requests streamlit
 ```
 ### alternativ
 
@@ -74,20 +94,6 @@ Zeitnachweis/
                         ├── write_work_data.py
                         └── WorkDay.py
 
-```
-
-## 🚀 Schnellstart
-
-### Nach Excel exportieren
-```bash
-# Standard (Niedersachsen)
-python start_time_export.py
-
-# Bestimmtes Bundesland
-python start_time_export.py BY
-
-# Benutzerdefinierte Zeitdaten-Datei
-python start_time_export.py NI ../input/my_data.json
 ```
 
 ## 🎯 Statuscodes
@@ -137,7 +143,20 @@ ZEITNACHWEIS_2026_2.xlsx  (Februar 2026)
 ...
 ```
 
-## ⚙️ Kommandozeilenargumente
+## 🔧 Command Line Fallback
+
+### Nach Excel exportieren
+```bash
+# Standard (Niedersachsen)
+python start_time_export.py
+
+# Bestimmtes Bundesland
+python start_time_export.py BY
+
+# Benutzerdefinierte Zeitdaten-Datei
+python start_time_export.py NI ../input/my_data.json
+```
+
 1. **Zum Ordner navigieren:**
 ```bash
 cd ./Zeitnachweis/scripts
