@@ -51,9 +51,6 @@ Sende eine E-Mail mit dem Betreff **"STATUS"** um Arbeitszeitdaten anzufordern.
 ]
 ```
 
-### 3. Datei im Input-Ordner hinterlegen
-Speichern Sie die erstellte `data.json` Datei im `/input` Ordner.
-
 ## 📋 Anforderungen
 
 ### Benötigte Pakete
@@ -69,8 +66,6 @@ __________
 ### Erforderliche Verzeichnisse / Dateien
 ```
 Zeitnachweis/
-            ├── input/
-            │           └── data.json
             ├── templates/
             │           └── template.xlsx
             └── scripts/
@@ -147,14 +142,14 @@ ZEITNACHWEIS_2026_2.xlsx  (Februar 2026)
 
 ### Nach Excel exportieren
 ```bash
-# Standard (Niedersachsen)
+# Standard (Niedersachsen), prompts for pasted JSON
 python start_time_export.py
 
-# Bestimmtes Bundesland
+# Bestimmtes Bundesland, prompts for pasted JSON
 python start_time_export.py BY
 
-# Benutzerdefinierte Zeitdaten-Datei
-python start_time_export.py NI ../input/my_data.json
+# Mit benutzerdefinierter Datei (optional)
+python start_time_export.py NI /path/to/my_data.json
 ```
 
 1. **Zum Ordner navigieren:**
@@ -164,10 +159,11 @@ cd ./Zeitnachweis/scripts
 
 2. **Skript ausführen:**
 ```bash
-python start_time_export.py [state_code] [data_file] [--input-dir DIR] [--output-dir DIR]
+python start_time_export.py [state_code] [data_file] [--output-dir DIR]
 ```
 
+Wenn keine Datendatei angegeben wird, fordert das Skript zur Eingabe der JSON-Daten auf.
+
 - `state_code`: Bundesland für Feiertage (optional, Standard: NI)
-- `data_file`: Pfad zur JSON-Datendatei (optional)
-- `--input-dir`: Input-Verzeichnis (optional, Standard: ../input)
+- `data_file`: Pfad zur JSON-Datendatei (optional, wenn nicht angegeben, Eingabeaufforderung)
 - `--output-dir`: Output-Verzeichnis (optional, Standard: ../output)

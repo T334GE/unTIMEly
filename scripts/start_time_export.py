@@ -2,12 +2,12 @@
 
 import sys
 import argparse
-from pathlib import Path
+import json
 from load_work_data import load_work_data
 from export_with_holidays import export_with_holidays
+from process_work_day_data import process_work_day_data
 
 DEFAULT_STATE_CODE = "NI"
-DEFAULT_INPUT_DIR = "../input"
 DEFAULT_OUTPUT_DIR = "../output"
 STATE_CODE_LENGTH = 2
 EXIT_CODE_ERROR = 1
@@ -19,8 +19,7 @@ def start_time_export():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Usage examples:
   python start_time_export.py BY
-  python start_time_export.py NI ../input/my_data.json
-  python start_time_export.py NI ../input/my_data.json""",
+  python start_time_export.py NI /path/to/data.json""",
     )
 
     parser.add_argument(
@@ -30,11 +29,6 @@ def start_time_export():
         help="German state code (default: NI)",
     )
     parser.add_argument("data_file", nargs="?", help="Path to data file (JSON)")
-    parser.add_argument(
-        "--input-dir",
-        default=DEFAULT_INPUT_DIR,
-        help="Input directory path (default: ../input)",
-    )
     parser.add_argument(
         "--output-dir",
         default=DEFAULT_OUTPUT_DIR,
@@ -49,43 +43,54 @@ def start_time_export():
 
     data_file = args.data_file
     if data_file is None:
-        json_file = Path(args.input_dir) / "data.json"
-
-        if json_file.exists():
-            data_file = str(json_file)
-        else:
-            print(
-                f"❌ No data file found in {args.input_dir}. Please create data.json."
-            )
-            print(
-                "   Use: python import_data.py to create a data file from your time data."
-            )
+        print("No data file specified. Please paste your JSON data below:")
+        print("Paste the JSON array of work days and press Enter twice to finish:")
+        pasted_lines = []
+        while True:
+            line = input()
+            if line == "":
+                break
+            pasted_lines.append(line)
+        pasted_json = "\n".join(pasted_lines)
+        try:
+            data = json.loads(pasted_json)
+        except json.JSONDecodeError as e:
+            print(f"❌ Error: Invalid JSON data: {e}")
             sys.exit(EXIT_CODE_ERROR)
+        work_days = process_work_day_data(data, "json")
+    else:
+        try:
+            work_days = load_work_data(data_file)
+        except (ValueError, FileNotFoundError) as e:
+            print(f"❌ Error loading data file: {e}")
+            sys.exit(EXIT_CODE_ERROR)
+
+    if not work_days:
+        print("❌ No valid work data found. Exiting.")
+        sys.exit(EXIT_CODE_ERROR)
 
     print("=== Excel Export ===")
     print(f"State: {args.state_code}")
     print(f"Output: {args.output_dir}/ZEITNACHWEIS_[year]_[month].xlsx")
-    print(f"Data: {data_file}")
+    if data_file is None:
+        print("Data: Pasted JSON")
+    else:
+        print(f"Data: {data_file}")
 
     try:
-        work_days = load_work_data(data_file)
-        if not work_days:
-            print("❌ No valid work data found. Exiting.")
-            sys.exit(EXIT_CODE_ERROR)
-
-        print(f"Loaded {len(work_days)} work days")
-
-        success = export_with_holidays(
+        output_files = export_with_holidays(
             work_days, args.state_code, output_dir=args.output_dir
         )
 
-        if success:
+        if output_files:
             print("✅ Export completed successfully!")
+            for file in output_files:
+                print(f"📁 Generated: {file}")
         else:
             print("❌ Export failed!")
             sys.exit(EXIT_CODE_ERROR)
 
-    except (ValueError, FileNotFoundError, RuntimeError, OSError) as e:
+    except (ValueError, RuntimeError, OSError) as e:
         print(f"❌ Error: {e}")
         sys.exit(EXIT_CODE_ERROR)
     except KeyboardInterrupt:
