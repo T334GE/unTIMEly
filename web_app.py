@@ -4,11 +4,11 @@ import streamlit as st
 import sys
 from pathlib import Path
 import json
-from process_work_day_data import process_work_day_data
 
 # Import your existing functions
 sys.path.append("scripts")
 from export_with_holidays import export_with_holidays
+from process_work_day_data import process_work_day_data
 
 # Constants
 SCROLL_HEIGHT_JSON = 600
