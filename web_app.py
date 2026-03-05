@@ -17,10 +17,10 @@ ITEMS_PER_PAGE_OPTIONS = [10, 20, 50, 100]
 TEMPLATE_PATH = "templates/template.xlsx"
 
 # Page configuration
-st.set_page_config(page_title="Zeitnachweis Export", page_icon="📊", layout="centered")
+st.set_page_config(page_title="unTIMEly Zeitnachweis", page_icon="📊", layout="centered")
 
 # Title and description
-st.title("📊 Zeitnachweis Export Tool")
+st.title("📊 unTIMEly Zeitnachweis")
 st.markdown("Arbeitsdaten in Excel-Dateien mit Feiertagsintegration exportieren")
 
 # Sidebar for configuration
