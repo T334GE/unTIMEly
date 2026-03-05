@@ -1,22 +1,38 @@
 # Zeittabelle für Arbeitszeitdaten erstellen
 
-Python-Skript zur Erstellung formatierter Excel-Zeittabellen aus Arbeitszeitdaten mit automatischer deutscher Feiertagsintegration.
+Eine Streamlit Python-App zur Erstellung formatierter Excel-Zeittabellen aus Arbeitszeitdaten mit automatischer deutscher Feiertagsintegration.
+
+Check it out: https://zeitnachweis-export.streamlit.app/
 
 ## 🚀 Schnellstart (Empfohlen: Web-App nutzen)
 
 ### Web-App starten
 
-1. Abhängigkeiten installieren:
+Du kannst die App entweder online nutzen oder lokal installieren.
+
+**Option 1: Online-Version**
+
+Gehe zu: https://zeitnachweis-export.streamlit.app/
+
+**Option 2: Lokale Version**
+
+1. Dieses Repository klonen:
+```bash
+git clone https://github.com/T334GE/Zeitnachweis-Web-App.git
+cd Zeitnachweis-Web-App
+```
+
+2. Abhängigkeiten installieren:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Web-App starten:
+3. Web-App starten:
 ```bash
 streamlit run web_app.py
 ```
 
-3. Browser öffnen und die Anweisungen in der App folgen, um deine Zeitdaten zu exportieren.
+4. Browser öffnen und die Anweisungen in der App folgen, um deine Zeitdaten zu exportieren.
 
 ### Fallback: Command Line (nur wenn Web-App nicht funktioniert)
 
@@ -29,8 +45,16 @@ Bevor das Skript ausgeführt wird, müssen die folgenden Schritte durchgeführt 
 ### 1. Zeitdaten anfordern
 Sende eine E-Mail mit dem Betreff **"STATUS"** um Arbeitszeitdaten anzufordern.
 
-### 2. Daten in JSON-Format übertragen
-Übertrage die erhaltenen Zeitdaten in das JSON-Format. Die Daten müssen wie folgt aussehen:
+### 2. JSON-Daten aus der E-Mail kopieren
+Unten auf der erhaltenen E-Mail befinden sich die JSON-Daten. Kopiere diese vollständig.
+
+### 3. Daten verwenden
+Es gibt zwei Möglichkeiten, die JSON-Daten zu verwenden:
+
+- **Empfohlen:** Übertrage die kopierten JSON-Daten in eine `data.json` Datei (z.B. mit einem Texteditor speichern). Diese Datei kann dann in der Web-App hochgeladen werden.
+- **Alternativ:** Füge die JSON-Daten direkt in die Web-App ein (über die "JSON einfügen" Option).
+
+Für die Kommandozeile: Wenn keine Datendatei angegeben wird, fordert das Skript zur direkten Eingabe der JSON-Daten auf.
 
 **Dies ist ein Tag, deine Daten haben wahrscheinlich mehrere Tage.**
 ```json
