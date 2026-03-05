@@ -13,7 +13,7 @@ from process_work_day_data import process_work_day_data
 # Constants
 SCROLL_HEIGHT_JSON = 600
 SCROLL_HEIGHT_TABLE = 500
-ITEMS_PER_PAGE_OPTIONS = [10, 20, 50, 100]
+ITEMS_PER_PAGE = 20
 TEMPLATE_PATH = "templates/template.xlsx"
 
 # Page configuration
@@ -127,10 +127,40 @@ with tab2:
 if "work_data" in st.session_state and st.session_state.work_data:
     st.header("👀 Datenübersicht")
 
+    # Add month filter
+    all_months = sorted(set(
+        f"{day.get('date', '')[:7]}" for day in st.session_state.work_data
+        if day.get('date')
+    ))
+    if all_months:
+        selected_month = st.selectbox(
+            "Monat filtern",
+            options=["Alle Monate"] + all_months,
+            index=0,
+            help="Wähle einen Monat aus, um nur Tage dieses Monats anzuzeigen"
+        )
+    else:
+        selected_month = "Alle Monate"
+
+    # Filter data based on selected month
+    if selected_month == "Alle Monate":
+        filtered_data = st.session_state.work_data
+    else:
+        filtered_data = [
+            day for day in st.session_state.work_data
+            if day.get('date', '').startswith(selected_month)
+        ]
+
     # Add pagination controls
-    items_per_page = st.selectbox("Elemente pro Seite", ITEMS_PER_PAGE_OPTIONS, index=2)
-    total_items = len(st.session_state.work_data)
+    items_per_page = ITEMS_PER_PAGE
+    total_items = len(filtered_data)
     total_pages = (total_items + items_per_page - 1) // items_per_page
+
+    # Reset current page if it exceeds total pages (e.g., after filtering)
+    current_page = st.session_state.get("current_page", 1)
+    if current_page > total_pages:
+        st.session_state.current_page = 1
+        current_page = 1
 
     # Page navigation
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -144,7 +174,7 @@ if "work_data" in st.session_state and st.session_state.work_data:
             "Seite",
             min_value=1,
             max_value=total_pages,
-            value=st.session_state.get("current_page", 1),
+            value=current_page,
             key="current_page_input",
         )
         st.session_state.current_page = current_page
@@ -248,7 +278,7 @@ if "work_data" in st.session_state and st.session_state.work_data:
             page = st.session_state.get("current_page", 1)
             start_idx = (page - 1) * items_per_page
             end_idx = min(start_idx + items_per_page, total_items)
-            page_data = st.session_state.work_data[start_idx:end_idx]
+            page_data = filtered_data[start_idx:end_idx]
 
             # Create scrollable container
             with st.container(height=SCROLL_HEIGHT_JSON):
@@ -290,15 +320,15 @@ if "work_data" in st.session_state and st.session_state.work_data:
             st.subheader("📊 Arbeitstage-Übersicht")
 
             # Create summary stats
-            total_days = len(st.session_state.work_data)
+            total_days = len(filtered_data)
             work_statuses = ["Anwesend"]
             work_days = len(
-                [d for d in st.session_state.work_data if d.status in work_statuses]
+                [d for d in filtered_data if d.status in work_statuses]
             )
             # Handle None values in duration_minutes
             valid_durations = [
                 d.duration_minutes
-                for d in st.session_state.work_data
+                for d in filtered_data
                 if d.duration_minutes is not None
             ]
             total_minutes = sum(valid_durations) if valid_durations else 0
@@ -325,7 +355,7 @@ if "work_data" in st.session_state and st.session_state.work_data:
             page = st.session_state.get("current_page", 1)
             start_idx = (page - 1) * items_per_page
             end_idx = min(start_idx + items_per_page, total_items)
-            page_data = st.session_state.work_data[start_idx:end_idx]
+            page_data = filtered_data[start_idx:end_idx]
 
             # Prepare data for display
             table_data = []
