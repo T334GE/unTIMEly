@@ -87,7 +87,22 @@ with tab2:
     raw_json = st.text_area(
         "JSON-Daten hier einfügen",
         height=300,
-        placeholder='[{"date": "2026-01-19", "weekday": "Montag", "status": "ANWESEND", "status_label": "Anwesend", "start_time": "08:00", "end_time": "16:30", "duration_minutes": 480, "duration": "08:00", "punch_count": 2, "break_minutes": 30, "fallback_end_applied": false}, ...]',
+        placeholder='''[
+  {
+    "date": "2026-01-19",
+    "weekday": "Montag",
+    "status": "ANWESEND",
+    "status_label": "Anwesend",
+    "start_time": "08:00",
+    "end_time": "16:30",
+    "duration_minutes": 480,
+    "duration": "08:00",
+    "punch_count": 2,
+    "break_minutes": 30,
+    "fallback_end_applied": false
+  },
+  ...
+]''',
         help="Arbeitsdaten im JSON-Format einfügen",
     )
 
@@ -347,17 +362,22 @@ with st.expander("Verwendung"):
     **JSON-Dateiformat:**
     JSON-Datei sollte Arbeitsdaten mit Feldern wie Datum, Wochentag, Status, Startzeit, Endzeit usw. enthalten.
     
-    Beispiel: {"date": "2026-01-19", 
-    "weekday": "Montag", 
-    "status": "ANWESEND", 
-    "status_label": "Anwesend", 
-    "start_time": "08:00", 
-    "end_time": "16:30", 
-    "duration_minutes": 480, 
-    "duration": "08:00", 
-    "punch_count": 2, 
-    "break_minutes": 30, 
-    "fallback_end_applied": false}
+    Beispiel:
+    ```json
+    {
+      "date": "2026-01-19",
+      "weekday": "Montag",
+      "status": "ANWESEND",
+      "status_label": "Anwesend",
+      "start_time": "08:00",
+      "end_time": "16:30",
+      "duration_minutes": 480,
+      "duration": "08:00",
+      "punch_count": 2,
+      "break_minutes": 30,
+      "fallback_end_applied": false
+    }
+    ```
     """)
 
 # Footer
