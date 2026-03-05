@@ -2,6 +2,8 @@ from datetime import datetime
 from pathlib import Path
 import os
 from typing import List
+import openpyxl
+
 from validate_paths import validate_paths
 from find_template_sheet import find_template_sheet
 from update_sheet_dates import update_sheet_dates
@@ -12,7 +14,6 @@ from fill_month_name import fill_month_name
 from fill_sponsor import fill_sponsor
 from fill_business import fill_business
 from write_work_data import write_work_data
-import openpyxl
 
 DEFAULT_STATE_CODE = "NI"
 DEFAULT_TEMPLATE_PATH = "../templates/template.xlsx"
@@ -31,7 +32,7 @@ def export_with_holidays(
 ) -> List[str]:
     try:
         if not os.path.exists(template_path):
-            print(f"❌ Error: Template file {template_path} not found")
+            print(f"Error: Template file {template_path} not found")
             return []
 
         validate_paths(template_path, output_dir)
@@ -51,43 +52,34 @@ def export_with_holidays(
 
         for year, month in sorted(months_data.keys()):
             month_work_days = months_data[(year, month)]
-
             output_filename = f"ZEITNACHWEIS_{year}_{month}.xlsx"
             output_path = Path(output_dir) / output_filename
             sheet_name = f"{month:02d}-{year}"
 
-            if os.path.exists(output_path):
-                print(f"📝 Updating existing file: {output_filename}")
-                template_wb = openpyxl.load_workbook(output_path)
-                write_work_data(template_wb, month_work_days)
-            else:
-                print(f"🆕 Creating new file: {output_filename}")
-                template_wb = openpyxl.load_workbook(template_path)
-                fill_name(template_wb, name)
-                fill_sponsor(template_wb, sponsor)
-                fill_business(template_wb, business)
-                template_sheet = find_template_sheet(template_wb)
+            print(f"Creating file from template: {output_filename}")
+            template_wb = openpyxl.load_workbook(template_path)
+            fill_name(template_wb, name)
+            fill_sponsor(template_wb, sponsor)
+            fill_business(template_wb, business)
+            template_sheet = find_template_sheet(template_wb)
 
-                new_sheet = template_wb.copy_worksheet(template_sheet)
-                new_sheet.title = sheet_name
-                fill_month_name(new_sheet, month, year)
-                update_sheet_dates(new_sheet, year, month)
+            new_sheet = template_wb.copy_worksheet(template_sheet)
+            new_sheet.title = sheet_name
+            fill_month_name(new_sheet, month, year)
+            update_sheet_dates(new_sheet, year, month)
+            template_wb.remove(template_sheet)
 
-                template_wb.remove(template_sheet)
+            months_in_data = {(year, month)}
+            all_holidays = fetch_holidays(months_in_data, state_code)
+            fill_holidays(template_wb, months_in_data, all_holidays)
 
-                months_in_data = {(year, month)}
-                all_holidays = fetch_holidays(months_in_data, state_code)
-                fill_holidays(template_wb, months_in_data, all_holidays)
-
-                write_work_data(template_wb, month_work_days)
-
+            write_work_data(template_wb, month_work_days)
             template_wb.save(output_path)
-            print(
-                f"✅ Exported {output_filename} with {len(month_work_days)} work days"
-            )
+
+            print(f"Exported {output_filename} with {len(month_work_days)} work days")
             output_files.append(str(output_path))
 
-        print(f"📁 Created {len(months_data)} separate files in output folder")
+        print(f"Created {len(months_data)} separate files in output folder")
         return output_files
 
     except (
@@ -95,14 +87,14 @@ def export_with_holidays(
         FileNotFoundError,
         PermissionError,
     ) as e:
-        print(f"❌ Error: Template file {template_path} not found or inaccessible: {e}")
+        print(f"Error: Template file {template_path} not found or inaccessible: {e}")
         return False
     except (ValueError, KeyError, IndexError) as e:
-        print(f"❌ Error: Invalid data format while processing work data: {e}")
+        print(f"Error: Invalid data format while processing work data: {e}")
         return False
     except OSError as e:
-        print(f"❌ Error: File system error during export: {e}")
+        print(f"Error: File system error during export: {e}")
         return False
     except (TypeError, AttributeError) as e:
-        print(f"⚠️  Warning: Error processing holiday data during export: {e}")
+        print(f"Warning: Error processing holiday data during export: {e}")
         return False

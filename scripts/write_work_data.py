@@ -1,7 +1,6 @@
 from get_status_label import get_status_label
 
 WORK_STATUSES = {"A", "P", "ANWESEND"}
-HOLIDAY_INDICATOR = "Feiertag"
 DATE_COLUMN = 1
 DEFAULT_HEADER_ROW = 6
 DEFAULT_STATUS_COLUMN = 2
@@ -43,61 +42,28 @@ def write_work_data(
             )
             continue
 
-        current_status = ws.cell(row=target_row, column=status_column).value
-        current_start = ws.cell(row=target_row, column=start_time_column).value
-        current_end = ws.cell(row=target_row, column=end_time_column).value
-        current_break = ws.cell(row=target_row, column=break_column).value
-
-        is_holiday = current_status and HOLIDAY_INDICATOR in str(current_status)
-
         ws.cell(row=target_row, column=DATE_COLUMN, value=date_obj)
+        ws.cell(
+            row=target_row,
+            column=status_column,
+            value=get_status_label(day.status),
+        )
 
-        if (
-            current_status is None
-            or current_status == ""
-            or (is_holiday and day.status in WORK_STATUSES)
-        ):
+        normalized_status = str(day.status).upper()
+
+        if normalized_status in WORK_STATUSES:
             ws.cell(
                 row=target_row,
-                column=DEFAULT_STATUS_COLUMN,
-                value=get_status_label(day.status),
+                column=start_time_column,
+                value=day.start_time,
             )
-
-        if day.status in WORK_STATUSES:
-            if (
-                current_start is None
-                or current_start == ""
-                or (is_holiday and day.status in WORK_STATUSES)
-            ):
-                ws.cell(
-                    row=target_row,
-                    column=DEFAULT_START_TIME_COLUMN,
-                    value=day.start_time,
-                )
-
-            if (
-                current_end is None
-                or current_end == ""
-                or (is_holiday and day.status in WORK_STATUSES)
-            ):
-                ws.cell(
-                    row=target_row, column=DEFAULT_END_TIME_COLUMN, value=day.end_time
-                )
-
-            if (
-                current_break is None
-                or current_break == ""
-                or (is_holiday and day.status in WORK_STATUSES)
-            ):
-                ws.cell(
-                    row=target_row,
-                    column=DEFAULT_BREAK_COLUMN,
-                    value=f"{day.break_minutes // MINUTES_PER_HOUR:{TIME_FORMAT_HOURS}}:{day.break_minutes % MINUTES_PER_HOUR:{TIME_FORMAT_MINUTES}}",
-                )
+            ws.cell(row=target_row, column=end_time_column, value=day.end_time)
+            ws.cell(
+                row=target_row,
+                column=break_column,
+                value=f"{day.break_minutes // MINUTES_PER_HOUR:{TIME_FORMAT_HOURS}}:{day.break_minutes % MINUTES_PER_HOUR:{TIME_FORMAT_MINUTES}}",
+            )
         else:
-            if current_status is None or current_status == "":
-                ws.cell(
-                    row=target_row,
-                    column=DEFAULT_STATUS_COLUMN,
-                    value=get_status_label(day.status),
-                )
+            ws.cell(row=target_row, column=start_time_column, value=None)
+            ws.cell(row=target_row, column=end_time_column, value=None)
+            ws.cell(row=target_row, column=break_column, value=None)
