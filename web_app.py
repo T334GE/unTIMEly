@@ -87,7 +87,7 @@ with tab2:
     raw_json = st.text_area(
         "JSON-Daten hier einfügen",
         height=300,
-        placeholder='''[
+        placeholder="""[
   {
     "date": "2026-01-19",
     "weekday": "Montag",
@@ -102,7 +102,7 @@ with tab2:
     "fallback_end_applied": false
   },
   ...
-]''',
+]""",
         help="Arbeitsdaten im JSON-Format einfügen",
     )
 
@@ -128,16 +128,19 @@ if "work_data" in st.session_state and st.session_state.work_data:
     st.header("👀 Datenübersicht")
 
     # Add month filter
-    all_months = sorted(set(
-        f"{day.get('date', '')[:7]}" for day in st.session_state.work_data
-        if day.get('date')
-    ))
+    all_months = sorted(
+        set(
+            f"{day.get('date', '')[:7]}"
+            for day in st.session_state.work_data
+            if day.get("date")
+        )
+    )
     if all_months:
         selected_month = st.selectbox(
             "Monat filtern",
             options=["Alle Monate"] + all_months,
             index=0,
-            help="Wähle einen Monat aus, um nur Tage dieses Monats anzuzeigen"
+            help="Wähle einen Monat aus, um nur Tage dieses Monats anzuzeigen",
         )
     else:
         selected_month = "Alle Monate"
@@ -147,8 +150,9 @@ if "work_data" in st.session_state and st.session_state.work_data:
         filtered_data = st.session_state.work_data
     else:
         filtered_data = [
-            day for day in st.session_state.work_data
-            if day.get('date', '').startswith(selected_month)
+            day
+            for day in st.session_state.work_data
+            if day.get("date", "").startswith(selected_month)
         ]
 
     # Add pagination controls
@@ -267,9 +271,7 @@ if "work_data" in st.session_state and st.session_state.work_data:
                 key=f"download_{file_name}",
             )
 
-    with st.expander(
-        "Klicken Sie hier, um die Datenübersicht anzuzeigen", expanded=True
-    ):
+    with st.expander("Klicke hier, um die Datenübersicht anzuzeigen", expanded=True):
         if st.session_state.data_source == "uploaded":
             # For uploaded data, show as JSON preview with pagination
             st.subheader("📋 Hochgeladene Datenstruktur")
@@ -322,9 +324,7 @@ if "work_data" in st.session_state and st.session_state.work_data:
             # Create summary stats
             total_days = len(filtered_data)
             work_statuses = ["Anwesend"]
-            work_days = len(
-                [d for d in filtered_data if d.status in work_statuses]
-            )
+            work_days = len([d for d in filtered_data if d.status in work_statuses])
             # Handle None values in duration_minutes
             valid_durations = [
                 d.duration_minutes
