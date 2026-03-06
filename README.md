@@ -2,7 +2,7 @@
 
 Eine Streamlit Python-App zur Erstellung formatierter Excel-Zeittabellen aus Arbeitszeitdaten mit automatischer deutscher Feiertagsintegration.
 
-Check it out: https://zeitnachweis-export.streamlit.app/
+Check it out: https://untimely.streamlit.app/
 
 ## 🚀 Schnellstart (Empfohlen: Web-App nutzen)
 
@@ -166,3 +166,4 @@ Wenn keine Datendatei angegeben wird, fordert das Skript zur Eingabe der JSON-Da
 
 - `data_file`: Pfad zur JSON-Datendatei (optional, wenn nicht angegeben, Eingabeaufforderung)
 - `--output-dir`: Output-Verzeichnis (optional, Standard: ../output)
+
